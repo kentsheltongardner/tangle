@@ -6,8 +6,8 @@ const DotRadius = 0.05
 const DotRivetRadius = 0.04
 const DotRadiusSquared = DotRadius * DotRadius
 const LineWidth = 0.01
-const RingRadius = 0.95
-const RingRadiusSquared = RingRadius * RingRadius
+const Scale = 0.95
+const ScaleSquared = Scale * Scale
 const Tau = 2 * Math.PI
 
 export default class Game {
@@ -105,8 +105,8 @@ export default class Game {
     }
     attemptMoveDot(worldX: number, worldY: number) {
         let distanceSquared = this.distanceSquared(worldX, worldY, 0, 0)
-        if (distanceSquared > RingRadiusSquared) {
-            const normalizedScalar = RingRadius / Math.sqrt(distanceSquared)
+        if (distanceSquared > ScaleSquared) {
+            const normalizedScalar = Scale / Math.sqrt(distanceSquared)
             worldX *= normalizedScalar
             worldY *= normalizedScalar
         }
@@ -154,9 +154,7 @@ export default class Game {
         this.canvas.height = window.innerHeight
 
         this.center = new Point(this.canvas.width / 2, this.canvas.height / 2)
-        this.scale = Math.min(this.canvas.width, this.canvas.height) / 2
-
-        console.log(this.scale)
+        this.scale = Math.min(this.canvas.width, this.canvas.height) / 2 * Scale
     }
 
     loop(timestamp: number) {
@@ -188,10 +186,9 @@ export default class Game {
     }
 
     renderRing() {
-        const ringRadius = this.scale * RingRadius
         this.context.strokeStyle = '#fff2'
         this.context.beginPath()
-        this.context.arc(this.center.x, this.center.y, ringRadius, 0, 2 * Math.PI)
+        this.context.arc(this.center.x, this.center.y, this.scale, 0, 2 * Math.PI)
         this.context.lineWidth = this.scale * LineWidth
         this.context.stroke()
     }
