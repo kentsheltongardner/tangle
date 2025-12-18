@@ -5,8 +5,7 @@ const DotRadius = 0.05;
 const DotRivetRadius = 0.04;
 const DotRadiusSquared = DotRadius * DotRadius;
 const LineWidth = 0.01;
-const Scale = 0.95;
-const ScaleSquared = Scale * Scale;
+const Scale = 0.75;
 const Tau = 2 * Math.PI;
 export default class Game {
     canvas;
@@ -89,10 +88,10 @@ export default class Game {
     }
     attemptMoveDot(worldX, worldY) {
         let distanceSquared = this.distanceSquared(worldX, worldY, 0, 0);
-        if (distanceSquared > ScaleSquared) {
-            const normalizedScalar = Scale / Math.sqrt(distanceSquared);
-            worldX *= normalizedScalar;
-            worldY *= normalizedScalar;
+        if (distanceSquared > 1) {
+            const angle = Math.atan2(worldY, worldX);
+            worldX = Math.cos(angle);
+            worldY = Math.sin(angle);
         }
         const dot = this.dots[this.selectedDotIndex];
         dot.x = worldX;
