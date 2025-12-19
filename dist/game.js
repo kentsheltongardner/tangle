@@ -1,11 +1,17 @@
 import Point from './point.js';
 import Line from './line.js';
 import Dot from './dot.js';
+// Enforced constraints
+// - Can't leave the ring
+// - Can't move a fixed dot
+// Required constraints
+// - Must cross exactly n lines
+// - Must be crossed by exactly n lines
 const DotRadius = 0.05;
 const DotRivetRadius = 0.04;
 const DotRadiusSquared = DotRadius * DotRadius;
 const LineWidth = 0.01;
-const Scale = 0.75;
+const Scale = 0.95;
 const Tau = 2 * Math.PI;
 export default class Game {
     canvas;
@@ -19,28 +25,43 @@ export default class Game {
     constructor(canvas) {
         this.canvas = canvas;
         this.context = this.canvas.getContext('2d');
-        this.dots.push(new Dot(0.5, 0.5, true));
-        this.dots.push(new Dot(-0.5, 0.5));
-        this.dots.push(new Dot(-0.5, -0.5));
-        this.dots.push(new Dot(0.5, -0.5, true));
-        this.dots.push(new Dot(0.0, 0.35, true));
-        this.dots.push(new Dot(0.35, 0.0, true));
-        this.dots.push(new Dot(0.0, -0.35, true));
-        this.dots.push(new Dot(-0.35, 0.0, true));
-        this.dots.push(new Dot(0.0, 0.0));
-        this.dots.push(new Dot(0.3, 0.4));
-        this.dots.push(new Dot(-0.3, 0.4));
-        this.lines.push(new Line(0, 1));
-        this.lines.push(new Line(1, 2));
-        this.lines.push(new Line(2, 3));
-        this.lines.push(new Line(3, 0));
-        this.lines.push(new Line(4, 5));
-        this.lines.push(new Line(5, 6));
-        this.lines.push(new Line(6, 7));
-        this.lines.push(new Line(7, 4));
-        this.lines.push(new Line(8, 9));
-        this.lines.push(new Line(9, 10));
-        this.lines.push(new Line(10, 8));
+        // this.dots.push(new Dot(0.5, 0.5, true))
+        // this.dots.push(new Dot(-0.5, 0.5))
+        // this.dots.push(new Dot(-0.5, -0.5))
+        // this.dots.push(new Dot(0.5, -0.5, true))
+        // this.dots.push(new Dot(0.0, 0.35, true))
+        // this.dots.push(new Dot(0.35, 0.0, true))
+        // this.dots.push(new Dot(0.0, -0.35, true))
+        // this.dots.push(new Dot(-0.35, 0.0, true))
+        // this.dots.push(new Dot(0.0, 0.0))
+        // this.dots.push(new Dot(0.3, 0.4))
+        // this.dots.push(new Dot(-0.3, 0.4))
+        // this.lines.push(new Line(0, 1))
+        // this.lines.push(new Line(1, 2))
+        // this.lines.push(new Line(2, 3))
+        // this.lines.push(new Line(3, 0))
+        // this.lines.push(new Line(4, 5))
+        // this.lines.push(new Line(5, 6))
+        // this.lines.push(new Line(6, 7))
+        // this.lines.push(new Line(7, 4))
+        // this.lines.push(new Line(8, 9))
+        // this.lines.push(new Line(9, 10))
+        // this.lines.push(new Line(10, 8))
+        for (let i = 0; i < 12; i++) {
+            const theta = Math.random() * Tau;
+            const distance = Math.random();
+            const x = Math.cos(theta) * distance;
+            const y = Math.sin(theta) * distance;
+            const fixed = Math.random() < 0.25;
+            this.dots.push(new Dot(x, y, fixed));
+        }
+        for (let i = 0; i < this.dots.length - 1; i++) {
+            for (let j = i + 1; j < this.dots.length; j++) {
+                if (Math.random() < 0.85)
+                    continue;
+                this.lines.push(new Line(i, j));
+            }
+        }
         this.attachEventListeners();
         this.resize();
         this.loop(0);
@@ -51,6 +72,11 @@ export default class Game {
         this.canvas.addEventListener('mousemove', (event) => this.onMouseMove(event));
         this.canvas.addEventListener('mouseup', (event) => this.onMouseUp(event));
         this.canvas.addEventListener('mouseleave', (event) => this.onMouseLeave(event));
+        this.canvas.addEventListener('contextmenu', (event) => this.onContextMenu(event));
+    }
+    onContextMenu(event) {
+        event.preventDefault();
+        event.stopPropagation();
     }
     onMouseDown(event) {
         if (event.button !== 0)

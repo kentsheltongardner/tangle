@@ -10,6 +10,7 @@ export default class Game {
     private selectedDotIndex;
     constructor(canvas: HTMLCanvasElement);
     attachEventListeners(): void;
+    onContextMenu(event: MouseEvent): void;
     onMouseDown(event: MouseEvent): void;
     attemptSelectDot(worldX: number, worldY: number): number;
     distanceSquared(x1: number, y1: number, x2: number, y2: number): number;
